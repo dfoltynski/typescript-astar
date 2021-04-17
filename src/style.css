@@ -1,0 +1,41 @@
+.cell {
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  background-color: lightblue;
+  cursor: pointer;
+}
+
+.barrier {
+  background-color: magenta;
+  animation-name: popup;
+  animation-iteration-count: 1;
+  animation-duration: 0.15s;
+}
+
+.container {
+  margin: auto;
+  height: 700px;
+  border: 2px solid black;
+}
+
+.start {
+  background-color: #ffd04f;
+}
+
+.end {
+  background-color: #ff6464;
+}
+
+@keyframes popup {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
