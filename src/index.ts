@@ -32,7 +32,7 @@ class Graph {
         let cell: HTMLTableDataCellElement = document.createElement("td");
         cell.id = `${x}:${y}`;
         cell.classList.add("cell");
-        cell.onclick = this.cellClick;
+        cell.onclick = this.createBarrier;
         tr.appendChild(cell);
       }
       table.appendChild(tr);
@@ -71,8 +71,7 @@ class Graph {
     }
   }
 
-  //
-  cellClick(ev: any) {
+  createBarrier(ev: any) {
     console.log(ev);
     const cell: HTMLTableDataCellElement = ev.path[0];
     if (cell.className == "cell") {
@@ -84,4 +83,60 @@ class Graph {
   }
 }
 
+let nodeType: string = "";
+
+function changeInfoText(text: string) {
+  const panel = document.querySelector(".controlpanel");
+
+  if (panel) {
+    panel.childNodes[3].textContent = `${text}`;
+  }
+  nodeType = `${text}`;
+}
+
+class ControlPanel {
+  constructor() {
+    const controlPanel: HTMLDivElement = document.createElement("div");
+    controlPanel.classList.add("controlpanel");
+
+    const startButton = this.createButton("Start node");
+    startButton.onclick = this.onClickStart;
+    controlPanel.appendChild(startButton);
+
+    const endButton = this.createButton("End node");
+    endButton.onclick = this.onClickEnd;
+    controlPanel.appendChild(endButton);
+
+    const barrierButton = this.createButton("Barrier node");
+    barrierButton.onclick = this.onClickBarrier;
+    controlPanel.appendChild(barrierButton);
+
+    const info: HTMLSpanElement = document.createElement("span");
+
+    info.textContent = `${nodeType}`;
+
+    controlPanel.appendChild(info);
+
+    document.body.appendChild(controlPanel);
+  }
+
+  createButton(text: string): HTMLButtonElement {
+    const button: HTMLButtonElement = document.createElement("button");
+    button.textContent = text;
+
+    return button;
+  }
+
+  onClickStart() {
+    changeInfoText("start node");
+  }
+  onClickEnd() {
+    changeInfoText("end node");
+  }
+  onClickBarrier() {
+    changeInfoText("barrier node");
+  }
+}
+
 const graph = new Graph();
+const controlPanel = new ControlPanel();

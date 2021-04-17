@@ -5,6 +5,12 @@
   padding: 0;
   background-color: lightblue;
   cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.cell:hover {
+  transform: scale(1.2);
+  filter: brightness(0.8);
 }
 
 .barrier {
@@ -26,6 +32,18 @@
 
 .end {
   background-color: #ff6464;
+}
+
+.controlpanel {
+  top: 0;
+  position: absolute;
+  width: 5em;
+}
+
+button {
+  margin: 1em 0;
+  width: 100%;
+  cursor: pointer;
 }
 
 @keyframes popup {
