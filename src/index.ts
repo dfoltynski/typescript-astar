@@ -72,18 +72,46 @@ class Graph {
   }
 
   createBarrier(ev: any) {
-    console.log(ev);
+    // console.log(ev);
     const cell: HTMLTableDataCellElement = ev.path[0];
-    if (cell.className == "cell") {
-      cell.classList.replace("cell", "barrier");
-      console.log(`${cell.id}`);
-    } else {
-      cell.classList.replace("barrier", "cell");
+    if (nodeType == "barrier") {
+      if (cell.className == "cell") {
+        cell.classList.add("barrier");
+        console.log(`${cell.id}`);
+      } else {
+        cell.classList.replace("barrier", "cell");
+      }
+    }
+    if (nodeType == "start") {
+      let startNode: HTMLElement | null = document.getElementById(startCoords);
+      if (startNode) {
+        startNode.classList.replace("start", "cell");
+        if (cell.className == "cell") {
+          cell.classList.add("cell", "start");
+          console.log(`${cell.id}`);
+          startCoords = cell.id;
+        } else {
+          cell.classList.replace("start", "cell");
+        }
+      }
+    }
+    if (nodeType == "end") {
+      let endNode: HTMLElement | null = document.getElementById(endCoords);
+      if (endNode) {
+        endNode.classList.replace("end", "cell");
+        if (cell.className == "cell") {
+          cell.classList.add("cell", "end");
+          console.log(`${cell.id}`);
+          endCoords = cell.id;
+        } else {
+          cell.classList.replace("end", "cell");
+        }
+      }
     }
   }
 }
 
-let nodeType: string = "";
+let nodeType: string = "barrier";
 
 function changeInfoText(text: string) {
   const panel = document.querySelector(".controlpanel");
@@ -128,13 +156,13 @@ class ControlPanel {
   }
 
   onClickStart() {
-    changeInfoText("start node");
+    changeInfoText("start");
   }
   onClickEnd() {
-    changeInfoText("end node");
+    changeInfoText("end");
   }
   onClickBarrier() {
-    changeInfoText("barrier node");
+    changeInfoText("barrier");
   }
 }
 
