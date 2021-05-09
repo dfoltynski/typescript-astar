@@ -54,6 +54,10 @@ button {
   background-color: red;
 }
 
+.path {
+  background-color: slateblue;
+}
+
 /* @keyframes popup {
   0% {
     transform: scale(1);
