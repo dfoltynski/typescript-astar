@@ -32,7 +32,7 @@ class Graph {
         let cell: HTMLTableDataCellElement = document.createElement("td");
         cell.id = `${x}:${y}`;
         cell.classList.add("cell");
-        cell.onclick = this.createBarrier;
+        cell.onclick = this.createNode;
         tr.appendChild(cell);
       }
       table.appendChild(tr);
@@ -71,40 +71,45 @@ class Graph {
     }
   }
 
-  createBarrier(ev: any) {
+  createNode(ev: any) {
     // console.log(ev);
     const cell: HTMLTableDataCellElement = ev.path[0];
+    const nodes = cell.className.split(" "); // classname = 'cell barrier|end|start|null'
     if (nodeType == "barrier") {
-      if (cell.className == "cell") {
+      if (nodes[0] == "cell" && nodes[1] == undefined) {
         cell.classList.add("barrier");
         console.log(`${cell.id}`);
-      } else {
+      } else if (nodes[1] == "barrier") {
         cell.classList.replace("barrier", "cell");
+      } else if (nodes[1] != undefined) {
+        nodeType = nodes[1];
+        changeInfoText(nodes[1]);
       }
-    }
-    if (nodeType == "start") {
+    } else if (nodeType == "start") {
       let startNode: HTMLElement | null = document.getElementById(startCoords);
+
       if (startNode) {
-        startNode.classList.replace("start", "cell");
-        if (cell.className == "cell") {
-          cell.classList.add("cell", "start");
+        // if we click on standard cell node then we change it to be start node and we prevent vanishing start node
+        if (nodes[0] == "cell" && nodes[1] == undefined) {
+          startNode.classList.replace("start", "cell");
+          cell.classList.add("start");
           console.log(`${cell.id}`);
           startCoords = cell.id;
-        } else {
-          cell.classList.replace("start", "cell");
+        } else if (nodes[1] != undefined) {
+          nodeType = nodes[1];
+          changeInfoText(nodes[1]);
         }
       }
-    }
-    if (nodeType == "end") {
+    } else if (nodeType == "end") {
       let endNode: HTMLElement | null = document.getElementById(endCoords);
       if (endNode) {
-        endNode.classList.replace("end", "cell");
-        if (cell.className == "cell") {
+        if (nodes[0] == "cell" && nodes[1] == undefined) {
+          endNode.classList.replace("end", "cell");
           cell.classList.add("cell", "end");
-          console.log(`${cell.id}`);
           endCoords = cell.id;
-        } else {
-          cell.classList.replace("end", "cell");
+        } else if (nodes[1] != undefined) {
+          nodeType = nodes[1];
+          changeInfoText(nodes[1]);
         }
       }
     }
@@ -117,7 +122,7 @@ function changeInfoText(text: string) {
   const panel = document.querySelector(".controlpanel");
 
   if (panel) {
-    panel.childNodes[3].textContent = `${text}`;
+    panel.childNodes[4].textContent = `${text}`;
   }
   nodeType = `${text}`;
 }
@@ -139,6 +144,14 @@ class ControlPanel {
     barrierButton.onclick = this.onClickBarrier;
     controlPanel.appendChild(barrierButton);
 
+    // const asdButton = this.createButton("asd node");
+    // asdButton.onclick = this.onClickPrint;
+    // controlPanel.appendChild(asdButton);
+
+    const findPathButton = this.createButton("Find path");
+    findPathButton.onclick = this.findPath;
+    controlPanel.appendChild(findPathButton);
+
     const info: HTMLSpanElement = document.createElement("span");
 
     info.textContent = `${nodeType}`;
@@ -155,6 +168,33 @@ class ControlPanel {
     return button;
   }
 
+  // onClickPrint() {
+  //   let paperCount: number = 0;
+  //   let time: number = 0;
+
+  //   setInterval(() => {
+  //     if (paperCount < 100) {
+  //       paperCount = paperCount + 1;
+  //       time = time + 9;
+  //       console.log("Papier dodany dla A");
+  //     }
+  //   }, 9);
+
+  //   setInterval(() => {
+  //     if (paperCount < 100) {
+  //       paperCount = paperCount + 1;
+  //       time = time + 12;
+  //       console.log("Papier dodany dla B");
+  //     }
+  //   }, 12);
+
+  //   setTimeout(() => {
+  //     if (paperCount === 100) {
+  //       console.log(`${paperCount} sheets of paper in ${time / 60} minutes`);
+  //     }
+  //   }, 2000);
+  // }
+
   onClickStart() {
     changeInfoText("start");
   }
@@ -163,6 +203,27 @@ class ControlPanel {
   }
   onClickBarrier() {
     changeInfoText("barrier");
+  }
+
+  findPath() {
+    const grid: NodeListOf<HTMLElement> = document.querySelectorAll(".cell");
+    console.log(grid);
+    console.log("grid");
+    const startNodeCoords: string | undefined = document.querySelector(".start")
+      ?.id;
+    console.log(startNodeCoords);
+
+    const endNodeCoords: string | undefined = document.querySelector(".end")
+      ?.id;
+    console.log(endNodeCoords);
+
+    const barrierNodesCoords: NodeListOf<HTMLTableCellElement> = document.querySelectorAll(
+      ".barrier"
+    );
+    console.log(barrierNodesCoords);
+
+    const straightNodeCost: number = 10; // 1*10
+    const diagonalNodeCost: number = 14; // sqrt(2) * 10
   }
 }
 
