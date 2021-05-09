@@ -15,13 +15,26 @@ let endCoords: string = `${Math.floor(Math.random() * 24) + 1}:${
   Math.floor(Math.random() * 24) + 1
 }`;
 
-class Graph {
+let mouseIsDown: boolean = false;
+
+function setBarrier(ev: any) {
+  const cell: HTMLTableDataCellElement = ev.path[0];
+
+  const nodes = cell.className.split(" "); // classname = 'cell barrier|end|start|null'
+
+  if (mouseIsDown) {
+    // prevent drawing barrier on end or start cell
+    if (nodes[0] == "cell" && nodes[1] != "end" && nodes[1] != "start") {
+      ev.target.classList.toggle("barrier");
+    }
+  }
+}
+
+class Grid {
   constructor() {
     const table: HTMLTableElement = document.createElement("table");
 
     table.classList.add("container");
-
-    console.log(startCoords, endCoords);
 
     // drawing 25x25 graph
     for (let x = 1; x <= 25; x++) {
@@ -29,19 +42,11 @@ class Graph {
       tr.id = x.toString();
 
       for (let y = 1; y <= 25; y++) {
-        let cell: HTMLTableDataCellElement = document.createElement("td");
-        cell.id = `${x}:${y}`;
-        cell.classList.add("cell");
-        cell.onclick = this.createNode;
+        let cell: HTMLTableDataCellElement = this.createCell(x, y);
         tr.appendChild(cell);
       }
       table.appendChild(tr);
     }
-
-    // onmousemove = (e: MouseEvent) => {
-    //   window.mouseX = e.clientX;
-    //   window.mouseY = e.clientY;
-    // };
 
     document.body.appendChild(table);
 
@@ -49,9 +54,25 @@ class Graph {
     this.createEndNode(endCoords);
   }
 
+  createCell(posX: number, posY: number): HTMLTableCellElement {
+    let cell: HTMLTableCellElement = document.createElement("td");
+    cell.id = `${posX}:${posY}`;
+    cell.classList.add("cell");
+    cell.onclick = this.changeNode;
+
+    cell.addEventListener("mouseover", setBarrier);
+    cell.addEventListener("mousedown", () => {
+      mouseIsDown = true;
+    });
+
+    cell.addEventListener("mouseup", () => {
+      mouseIsDown = false;
+    });
+    return cell;
+  }
+
   // creating start node
   createStartNode(startNodeCoords: string) {
-    console.log(startNodeCoords);
     const startNode: HTMLElement | null = document.getElementById(
       startNodeCoords
     );
@@ -63,7 +84,6 @@ class Graph {
 
   // creating end node
   createEndNode(endNodeCoords: string) {
-    console.log(endNodeCoords);
     const endNode: HTMLElement | null = document.getElementById(endNodeCoords);
 
     if (endNode) {
@@ -71,10 +91,10 @@ class Graph {
     }
   }
 
-  createNode(ev: any) {
-    // console.log(ev);
+  changeNode(ev: any) {
     const cell: HTMLTableDataCellElement = ev.path[0];
     const nodes = cell.className.split(" "); // classname = 'cell barrier|end|start|null'
+
     if (nodeType == "barrier") {
       if (nodes[0] == "cell" && nodes[1] == undefined) {
         cell.classList.add("barrier");
@@ -89,7 +109,6 @@ class Graph {
       let startNode: HTMLElement | null = document.getElementById(startCoords);
 
       if (startNode) {
-        // if we click on standard cell node then we change it to be start node and we prevent vanishing start node
         if (nodes[0] == "cell" && nodes[1] == undefined) {
           startNode.classList.replace("start", "cell");
           cell.classList.add("start");
@@ -209,23 +228,36 @@ class ControlPanel {
     const grid: NodeListOf<HTMLElement> = document.querySelectorAll(".cell");
     console.log(grid);
     console.log("grid");
-    const startNodeCoords: string | undefined = document.querySelector(".start")
-      ?.id;
-    console.log(startNodeCoords);
+    const startNode: HTMLTableCellElement | null = document.querySelector(
+      ".start"
+    );
+    console.log(startNode);
 
-    const endNodeCoords: string | undefined = document.querySelector(".end")
-      ?.id;
-    console.log(endNodeCoords);
+    const endNode: HTMLTableCellElement | null = document.querySelector(".end");
 
-    const barrierNodesCoords: NodeListOf<HTMLTableCellElement> = document.querySelectorAll(
+    console.log(endNode);
+
+    const barrierNodes: NodeListOf<HTMLTableCellElement> = document.querySelectorAll(
       ".barrier"
     );
-    console.log(barrierNodesCoords);
+    console.log(barrierNodes);
 
-    const straightNodeCost: number = 10; // 1*10
-    const diagonalNodeCost: number = 14; // sqrt(2) * 10
+    // we need to make sure that these nodes exist in our grid
+    if (startNode && endNode && barrierNodes) {
+      const straightNodeCost: number = 10; // 1*10
+      const diagonalNodeCost: number = 14; // sqrt(2) * 10
+      const openList: Array<HTMLTableCellElement> = [];
+      const closedList: Array<HTMLTableCellElement> = [];
+
+      openList.push(startNode);
+
+      // while (openList.length > 0) {
+      // let currentNode: HTMLTableCellElement = openList[0];
+      // for (let i = 1; i < openList.length; i++) {}
+      // }
+    }
   }
 }
 
-const graph = new Graph();
+const grid = new Grid();
 const controlPanel = new ControlPanel();
