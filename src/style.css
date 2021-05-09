@@ -46,7 +46,15 @@ button {
   cursor: pointer;
 }
 
-@keyframes popup {
+.openList {
+  background-color: chartreuse;
+}
+
+.closedList {
+  background-color: red;
+}
+
+/* @keyframes popup {
   0% {
     transform: scale(1);
   }
@@ -56,4 +64,4 @@ button {
   100% {
     transform: scale(1);
   }
-}
+} */

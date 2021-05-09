@@ -7,6 +7,7 @@ declare global {
   }
 }
 
+// variables
 let startCoords: string = `${Math.floor(Math.random() * 24) + 1}:${
   Math.floor(Math.random() * 24) + 1
 }`;
@@ -16,6 +17,40 @@ let endCoords: string = `${Math.floor(Math.random() * 24) + 1}:${
 }`;
 
 let mouseIsDown: boolean = false;
+
+let nodeType: string = "barrier";
+
+// functions
+function changeInfoText(text: string) {
+  const panel = document.querySelector(".controlpanel");
+
+  if (panel) {
+    panel.childNodes[4].textContent = `${text}`;
+  }
+  nodeType = `${text}`;
+}
+
+function StartEndNodeBehaviour(
+  cell: HTMLTableCellElement,
+  nodes: Array<string>,
+  modifier?: string
+) {
+  let node: HTMLElement | null = document.getElementById(
+    modifier == "start" ? startCoords : endCoords
+  );
+
+  if (node) {
+    if (nodes[0] == "cell" && nodes[1] == undefined) {
+      node.classList.replace(modifier == "start" ? "start" : "end", "cell");
+      cell.classList.add(modifier == "start" ? "start" : "end");
+      console.log(`${cell.id}`);
+      modifier == "start" ? (startCoords = cell.id) : (endCoords = cell.id);
+    } else if (nodes[1] != undefined) {
+      nodeType = nodes[1];
+      changeInfoText(nodes[1]);
+    }
+  }
+}
 
 function setBarrier(ev: any) {
   const cell: HTMLTableDataCellElement = ev.path[0];
@@ -27,6 +62,60 @@ function setBarrier(ev: any) {
     if (nodes[0] == "cell" && nodes[1] != "end" && nodes[1] != "start") {
       ev.target.classList.toggle("barrier");
     }
+  }
+}
+
+function removeFromOpenList(
+  openList: Array<HTMLTableCellElement>,
+  current: HTMLTableCellElement
+) {
+  for (let i = openList.length; i >= 0; i--) {
+    if (openList[i] == current) {
+      openList.splice(i, 1);
+    }
+  }
+}
+
+function addNeighbours(currentNode: HTMLTableCellElement): string {
+  // const currentNode = document.getElementById(startCoords);
+  let x: number = parseInt(currentNode.id.split(":")[0]);
+  let y: number = parseInt(currentNode.id.split(":")[1]);
+
+  if (currentNode) {
+    console.log(`tworzymy sasiadow dla `);
+    console.log(currentNode);
+
+    console.log(currentNode.id);
+    console.log(
+      currentNode.setAttribute(
+        "neighbours",
+        JSON.stringify({
+          left: `${x - 1}:${y}`,
+          right: `${x + 1}:${y}`,
+          top: `${x}:${y - 1}`,
+          bottom: `${x}:${y + 1}`,
+        })
+      )
+    );
+  }
+  return JSON.stringify({
+    left: `${x - 1}:${y}`,
+    right: `${x + 1}:${y}`,
+    top: `${x}:${y - 1}`,
+    bottom: `${x}:${y + 1}`,
+  });
+}
+
+class Node {
+  constructor(x: number, y: number) {
+    const X: number = x;
+    const Y: number = y;
+
+    const g: number = 0;
+    const h: number = 0;
+    const cost: number = g + h;
+
+    const neighbours = [];
   }
 }
 
@@ -56,11 +145,12 @@ class Grid {
 
   createCell(posX: number, posY: number): HTMLTableCellElement {
     let cell: HTMLTableCellElement = document.createElement("td");
-    cell.id = `${posX}:${posY}`;
+    cell.id = `${posY}:${posX}`;
     cell.classList.add("cell");
     cell.onclick = this.changeNode;
 
     cell.addEventListener("mouseover", setBarrier);
+
     cell.addEventListener("mousedown", () => {
       mouseIsDown = true;
     });
@@ -68,6 +158,17 @@ class Grid {
     cell.addEventListener("mouseup", () => {
       mouseIsDown = false;
     });
+
+    cell.setAttribute("cost", Number.POSITIVE_INFINITY.toString());
+    cell.setAttribute(
+      "neighbours",
+      JSON.stringify({
+        left: "0:0",
+        right: "0:0",
+        top: "0:0",
+        bottom: "0:0",
+      })
+    );
     return cell;
   }
 
@@ -79,6 +180,7 @@ class Grid {
 
     if (startNode) {
       startNode.classList.add("start");
+      startNode.setAttribute("cost", "0");
     }
   }
 
@@ -106,44 +208,11 @@ class Grid {
         changeInfoText(nodes[1]);
       }
     } else if (nodeType == "start") {
-      let startNode: HTMLElement | null = document.getElementById(startCoords);
-
-      if (startNode) {
-        if (nodes[0] == "cell" && nodes[1] == undefined) {
-          startNode.classList.replace("start", "cell");
-          cell.classList.add("start");
-          console.log(`${cell.id}`);
-          startCoords = cell.id;
-        } else if (nodes[1] != undefined) {
-          nodeType = nodes[1];
-          changeInfoText(nodes[1]);
-        }
-      }
+      StartEndNodeBehaviour(cell, nodes, "start");
     } else if (nodeType == "end") {
-      let endNode: HTMLElement | null = document.getElementById(endCoords);
-      if (endNode) {
-        if (nodes[0] == "cell" && nodes[1] == undefined) {
-          endNode.classList.replace("end", "cell");
-          cell.classList.add("cell", "end");
-          endCoords = cell.id;
-        } else if (nodes[1] != undefined) {
-          nodeType = nodes[1];
-          changeInfoText(nodes[1]);
-        }
-      }
+      StartEndNodeBehaviour(cell, nodes, "end");
     }
   }
-}
-
-let nodeType: string = "barrier";
-
-function changeInfoText(text: string) {
-  const panel = document.querySelector(".controlpanel");
-
-  if (panel) {
-    panel.childNodes[4].textContent = `${text}`;
-  }
-  nodeType = `${text}`;
 }
 
 class ControlPanel {
@@ -162,10 +231,6 @@ class ControlPanel {
     const barrierButton = this.createButton("Barrier node");
     barrierButton.onclick = this.onClickBarrier;
     controlPanel.appendChild(barrierButton);
-
-    // const asdButton = this.createButton("asd node");
-    // asdButton.onclick = this.onClickPrint;
-    // controlPanel.appendChild(asdButton);
 
     const findPathButton = this.createButton("Find path");
     findPathButton.onclick = this.findPath;
@@ -187,34 +252,7 @@ class ControlPanel {
     return button;
   }
 
-  // onClickPrint() {
-  //   let paperCount: number = 0;
-  //   let time: number = 0;
-
-  //   setInterval(() => {
-  //     if (paperCount < 100) {
-  //       paperCount = paperCount + 1;
-  //       time = time + 9;
-  //       console.log("Papier dodany dla A");
-  //     }
-  //   }, 9);
-
-  //   setInterval(() => {
-  //     if (paperCount < 100) {
-  //       paperCount = paperCount + 1;
-  //       time = time + 12;
-  //       console.log("Papier dodany dla B");
-  //     }
-  //   }, 12);
-
-  //   setTimeout(() => {
-  //     if (paperCount === 100) {
-  //       console.log(`${paperCount} sheets of paper in ${time / 60} minutes`);
-  //     }
-  //   }, 2000);
-  // }
-
-  onClickStart() {
+  onClickStart(ev: any) {
     changeInfoText("start");
   }
   onClickEnd() {
@@ -249,8 +287,54 @@ class ControlPanel {
       const openList: Array<HTMLTableCellElement> = [];
       const closedList: Array<HTMLTableCellElement> = [];
 
+      let winner = 0;
+      let current: HTMLTableCellElement;
       openList.push(startNode);
 
+      let currentNeighbours: string;
+
+      while (openList.length > 0) {
+        for (let i = 0; i < openList.length; i++) {
+          if (
+            parseInt(openList[i].getAttribute("cost") as string) <
+            parseInt(openList[winner].getAttribute("cost") as string)
+          ) {
+            winner = i;
+          }
+        }
+
+        current = openList[winner];
+
+        if (openList[winner] == endNode) {
+          console.log("DONE");
+        }
+
+        removeFromOpenList(openList, current);
+        closedList.push(current);
+
+        currentNeighbours = addNeighbours(current);
+
+        currentNeighbours = JSON.parse(
+          current.getAttribute("neighbours") as string
+        );
+
+        console.log(currentNeighbours);
+
+        for (let i = 0; i < Object.keys(currentNeighbours).length; i++) {
+          let neighbour = Object.values(currentNeighbours)[i];
+          console.log(neighbour);
+        }
+
+        // marking open list elements as green cells
+        for (let i = 0; i < openList.length; i++) {
+          openList[i].classList.add("openList");
+        }
+
+        // marking open list elements as green cells
+        for (let i = 0; i < closedList.length; i++) {
+          closedList[i].classList.add("closedList");
+        }
+      }
       // while (openList.length > 0) {
       // let currentNode: HTMLTableCellElement = openList[0];
       // for (let i = 1; i < openList.length; i++) {}
