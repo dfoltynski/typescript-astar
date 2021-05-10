@@ -43,7 +43,7 @@ function StartEndNodeBehaviour(
     if (nodes[0] == "cell" && nodes[1] == undefined) {
       node.classList.replace(modifier == "start" ? "start" : "end", "cell");
       cell.classList.add(modifier == "start" ? "start" : "end");
-      console.log(`${cell.id}`);
+      // console.log(`${cell.id}`);
       modifier == "start" ? (startCoords = cell.id) : (endCoords = cell.id);
     } else if (nodes[1] != undefined) {
       nodeType = nodes[1];
@@ -82,10 +82,10 @@ function addNeighbours(currentNode: HTMLTableCellElement): string {
   let y: number = parseInt(currentNode.id.split(":")[1]);
 
   if (currentNode) {
-    console.log(`tworzymy sasiadow dla `);
-    console.log(currentNode);
+    // console.log(`tworzymy sasiadow dla `);
+    // console.log(currentNode);
 
-    console.log(currentNode.id);
+    // console.log(currentNode.id);
     currentNode.setAttribute(
       "neighbours",
       JSON.stringify({
@@ -95,14 +95,14 @@ function addNeighbours(currentNode: HTMLTableCellElement): string {
         bottom: `${x}:${y + 1}`,
       })
     );
-    console.log(
-      JSON.stringify({
-        left: `${x - 1}:${y}`,
-        right: `${x + 1}:${y}`,
-        top: `${x}:${y - 1}`,
-        bottom: `${x}:${y + 1}`,
-      })
-    );
+    // console.log(
+    //   JSON.stringify({
+    //     left: `${x - 1}:${y}`,
+    //     right: `${x + 1}:${y}`,
+    //     top: `${x}:${y - 1}`,
+    //     bottom: `${x}:${y + 1}`,
+    //   })
+    // );
   }
   return JSON.stringify({
     left: `${x - 1}:${y}`,
@@ -121,7 +121,7 @@ function heuristic(
 
   const endNodeX: number = parseInt(endNode.id.split(":")[0]);
   const endNodeY: number = parseInt(endNode.id.split(":")[1]);
-  console.log(neighbourX, neighbourY, endNodeX, endNodeY);
+  // console.log(neighbourX, neighbourY, endNodeX, endNodeY);
 
   let h = Math.floor(
     Math.sqrt(
@@ -137,7 +137,7 @@ function findLowestCostInOpenList(openList: Array<HTMLTableCellElement>) {
     currentNode.push(parseInt(openList[i].getAttribute("cost") as string));
   }
 
-  console.log(currentNode);
+  // console.log(currentNode);
 }
 
 function distanceBetweenStartAndNeighbourThroughCurrent(
@@ -162,13 +162,13 @@ function distanceBetweenStartAndNeighbourThroughCurrent(
     currentNeighbourNode.id.split(":")[1]
   );
 
-  console.log("Start Node X:Y: ", startNodeX, startNodeY);
-  console.log("Current X:Y: ", currentNodeX, currentNodeY);
-  console.log(
-    "Current neighbour X:Y: ",
-    currentNeighbourNodeX,
-    currentNeighbourNodeY
-  );
+  // console.log("Start Node X:Y: ", startNodeX, startNodeY);
+  // console.log("Current X:Y: ", currentNodeX, currentNodeY);
+  // console.log(
+  //   "Current neighbour X:Y: ",
+  //   currentNeighbourNodeX,
+  //   currentNeighbourNodeY
+  // );
 
   let distance = Math.floor(
     Math.sqrt(
@@ -181,9 +181,15 @@ function distanceBetweenStartAndNeighbourThroughCurrent(
       )
   );
 
-  console.log(distance);
+  // console.log(distance);
 
   return distance;
+}
+
+function reconstructPath(cameFrom: any, current: HTMLTableCellElement) {
+  console.log(current);
+
+  console.log(cameFrom);
 }
 
 class Node {
@@ -285,7 +291,7 @@ class Grid {
     if (nodeType == "barrier") {
       if (nodes[0] == "cell" && nodes[1] == undefined) {
         cell.classList.add("barrier");
-        console.log(`${cell.id}`);
+        // console.log(`${cell.id}`);
       } else if (nodes[1] == "barrier") {
         cell.classList.replace("barrier", "cell");
       } else if (nodes[1] != undefined) {
@@ -363,7 +369,7 @@ class ControlPanel {
     const barrierNodes: NodeListOf<HTMLTableCellElement> = document.querySelectorAll(
       ".barrier"
     );
-    console.log("Barrier nodes: ", barrierNodes);
+    // console.log("Barrier nodes: ", barrierNodes);
 
     // we need to make sure that these nodes exist in our grid
     if (startNode && endNode && barrierNodes) {
@@ -378,10 +384,9 @@ class ControlPanel {
 
       let cameFrom: Array<HTMLTableCellElement> = [];
       while (openList.length > 0) {
-        console.log("OpenList content: ", openList);
-        console.log("ClosedList content: ", closedList);
+        // console.log("OpenList content: ", openList);
+        // console.log("ClosedList content: ", closedList);
 
-        //OLD VERSION
         for (let i = 0; i < openList.length; i++) {
           if (
             parseInt(openList[i].getAttribute("cost") as string) <
@@ -391,14 +396,23 @@ class ControlPanel {
           }
         }
         current = openList[winner];
-        console.log("curr: ", current);
-        if (openList[winner] == endNode) {
-          console.log("DONE");
-        }
+        console.log("WYGRYWA:", current);
 
         if (current == endNode) {
+          // let cameFromList: Array<HTMLTableCellElement> = [];
+          // document.querySelectorAll(".cell").forEach((cell) => {
+          //   if (cell.getAttribute("cameFrom") != null) {
+          //     cameFromList.push(cell as HTMLTableCellElement);
+          //     console.log(cameFromList);
+          //   }
+          // });
+
+          reconstructPath(cameFrom, current);
+
           console.log("DONE");
+
           return;
+          break;
         }
 
         removeFromOpenList(openList, current);
@@ -408,7 +422,7 @@ class ControlPanel {
         currentNeighbours = JSON.parse(
           current.getAttribute("neighbours") as string
         );
-        console.log("Current neighbours: ", currentNeighbours);
+        // console.log("Current neighbours: ", currentNeighbours);
 
         for (let i = 0; i < Object.keys(currentNeighbours).length; i++) {
           let currentNeighbour: HTMLTableCellElement = document.getElementById(
@@ -416,7 +430,7 @@ class ControlPanel {
           ) as HTMLTableCellElement;
 
           if (!closedList.includes(currentNeighbour)) {
-            console.log(currentNeighbour);
+            // console.log(currentNeighbour);
 
             let tentativeGScore =
               parseInt(current.getAttribute("g") as string) +
@@ -438,7 +452,9 @@ class ControlPanel {
               tentativeGIsBetter = true;
             }
             if (tentativeGIsBetter) {
-              currentNeighbour.setAttribute("parent", current.id);
+              // console.log(currentNeighbour, current);
+              cameFrom.push(currentNeighbour);
+              currentNeighbour.setAttribute("cameFrom", current.id);
               currentNeighbour.setAttribute("g", `${tentativeGScore}`);
               currentNeighbour.setAttribute(
                 "cost",
@@ -449,78 +465,6 @@ class ControlPanel {
               );
             }
           }
-
-          //   if (
-          //     tentativeGScore <
-          //     parseInt(currentNeighbour.getAttribute("g") as string)
-          //   ) {
-          //     console.log("asd");
-
-          //     currentNeighbour.setAttribute("g", `${tentativeGScore}`);
-          // currentNeighbour.setAttribute(
-          //   "cost",
-          //   `${
-          //     parseInt(currentNeighbour.getAttribute("g") as string) +
-          //     heuristic(currentNeighbour, endNode)
-          //   }`
-          // );
-
-          //     if (!openList.includes(currentNeighbour)) {
-          //       openList.push(currentNeighbour);
-          //     }
-          //   } else {
-          //     console.log("chuj");
-          //   }
-          // }
-          // --------------
-          //   for (let i = 0; i < Object.keys(currentNeighbours).length; i++) {
-          //     let neighbour: HTMLTableCellElement = document.getElementById(
-          //       Object.values(currentNeighbours)[i]
-          //     ) as HTMLTableCellElement;
-          //     console.log(neighbour);
-          //     if (neighbour) {
-          //       if (!closedList.includes(neighbour)) {
-          //         let tmpG = parseInt(current.getAttribute("g") as string) + 1;
-          //         neighbour.setAttribute("g", `${tmpG}`);
-          //         console.log(tmpG);
-          //         if (openList.includes(neighbour)) {
-          //           if (tmpG < parseInt(neighbour.getAttribute("g") as string)) {
-          //             neighbour.setAttribute(
-          //               "g",
-          //               `${parseInt(neighbour.getAttribute("g") as string) + 1}`
-          //             );
-          //           }
-          //         } else {
-          //           neighbour.setAttribute(
-          //             "g",
-          //             `${parseInt(neighbour.getAttribute("g") as string) + 1}`
-          //           );
-          //           openList.push(neighbour);
-          //         }
-          //         neighbour.setAttribute("h", `${heuristic(neighbour, endNode)}`);
-          //         let g = neighbour.getAttribute("g");
-          //         let h = neighbour.getAttribute("h");
-          //         neighbour.setAttribute(
-          //           "cost",
-          //           `${parseInt(g as string) + parseInt(h as string)}`
-          //         );
-          //       }
-          //     }
-          //   }
-          // }
-          // let lowestCost = findLowestCostInOpenList(openList);
-          // // marking open list elements as green cells
-          // for (let i = 0; i < openList.length; i++) {
-          //   openList[i].classList.add("openList");
-          // }
-          // // marking open list elements as green cells
-          // for (let i = 0; i < closedList.length; i++) {
-          //   closedList[i].classList.add("closedList");
-          // }
-          // while (openList.length > 0) {
-          // let currentNode: HTMLTableCellElement = openList[0];
-          // for (let i = 1; i < openList.length; i++) {}
-          // }
         }
         // marking open list elements as green cells
         for (let i = 0; i < openList.length; i++) {
@@ -530,12 +474,6 @@ class ControlPanel {
         for (let i = 0; i < closedList.length; i++) {
           closedList[i].classList.add("closedList");
         }
-
-        // for (let i = 0; i < cameFrom.length; i++) {
-        //   cameFrom[i].classList.add("path");
-        // }
-
-        console.log("came from: ", cameFrom);
       }
     }
   }
