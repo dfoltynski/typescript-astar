@@ -3,9 +3,10 @@
   height: 28px;
   margin: 0;
   padding: 0;
-  background-color: lightblue;
+  background-color: #f0f4ef;
   cursor: pointer;
   transition: transform 0.2s;
+  border-radius: 10px;
 }
 
 .cell:hover {
@@ -14,7 +15,7 @@
 }
 
 .barrier {
-  background-color: magenta;
+  background-color: #e6aace;
   animation-name: popup;
   animation-iteration-count: 1;
   animation-duration: 0.15s;
@@ -27,35 +28,45 @@
 }
 
 .start {
-  background-color: #ffd04f;
+  /* background-color: #afdb67; */
+  background: #89cff0 !important; /* I'm using !important 'cause I don't want to make more mess in typescript preventing start and end node become black like path color */
 }
 
 .end {
-  background-color: #ff6464;
+  /* background-color: #d34f73; */
+  background: #ffc0cb !important; /* I'm using !important 'cause I don't want to make more mess in typescript preventing start and end node become black like path color */
 }
 
 .controlpanel {
+  display: flex;
   top: 0;
-  position: absolute;
-  width: 5em;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
 }
 
 button {
-  margin: 1em 0;
-  width: 100%;
+  margin: 1em;
+  padding: 0.5em 1em;
   cursor: pointer;
+
+  border-radius: 20px;
+  border: none;
 }
 
 .openList {
-  background-color: chartreuse;
+  background-color: #f9fcf8;
+  /* background-color: #d5be61; */
 }
 
 .closedList {
-  background-color: red;
+  background-color: #dedfde;
+  /* background-color: #e5ee7a; */
 }
 
 .path {
-  background-color: slateblue;
+  /* background-color: #3e4bac; */
+  background-color: #64727c;
 }
 
 /* @keyframes popup {

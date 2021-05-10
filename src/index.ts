@@ -120,53 +120,6 @@ function heuristic(
   return h;
 }
 
-function findLowestCostInOpenList(openList: Array<HTMLTableCellElement>) {
-  let currentNode: Array<number> = [];
-  for (let i = 0; i < openList.length; i++) {
-    currentNode.push(parseInt(openList[i].getAttribute("cost") as string));
-  }
-
-  // console.log(currentNode);
-}
-
-function distanceBetweenStartAndNeighbourThroughCurrent(
-  startNode: HTMLTableCellElement,
-  current: HTMLTableCellElement,
-  currentNeighbour: string
-): number {
-  let startNodeX: number = parseInt(startNode.id.split(":")[0]);
-  let startNodeY: number = parseInt(startNode.id.split(":")[1]);
-
-  let currentNodeX: number = parseInt(current.id.split(":")[0]);
-  let currentNodeY: number = parseInt(current.id.split(":")[1]);
-
-  let currentNeighbourNode: HTMLTableCellElement = document.getElementById(
-    currentNeighbour
-  ) as HTMLTableCellElement;
-
-  let currentNeighbourNodeX: number = parseInt(
-    currentNeighbourNode.id.split(":")[0]
-  );
-  let currentNeighbourNodeY: number = parseInt(
-    currentNeighbourNode.id.split(":")[1]
-  );
-
-  let distance = Math.floor(
-    Math.sqrt(
-      Math.pow(currentNodeX - startNodeX, 2) +
-        Math.pow(currentNodeY - startNodeY, 2)
-    ) +
-      Math.sqrt(
-        Math.pow(currentNeighbourNodeX - currentNodeX, 2) +
-          Math.pow(currentNeighbourNodeY - currentNodeY, 2)
-      )
-  );
-
-  // console.log(distance);
-
-  return distance;
-}
-
 function reconstructPath(
   startNode: HTMLTableCellElement,
   endNode: HTMLTableCellElement
@@ -183,22 +136,9 @@ function reconstructPath(
 
   path.reverse();
 
-  // marking open list elements as green cells
+  // drawing the shortest path from startNode to endNode
   for (let i = 0; i < path.length; i++) {
     path[i].classList.add("path");
-  }
-}
-
-class Node {
-  constructor(x: number, y: number) {
-    const X: number = x;
-    const Y: number = y;
-
-    const g: number = 0;
-    const h: number = 0;
-    const cost: number = g + h;
-
-    const neighbours = [];
   }
 }
 
@@ -258,7 +198,6 @@ class Grid {
     );
 
     if (startNode) {
-      startNode.innerText = "S";
       startNode.classList.add("start");
       startNode.setAttribute("cost", "0");
     }
@@ -269,7 +208,6 @@ class Grid {
     const endNode: HTMLElement | null = document.getElementById(endNodeCoords);
 
     if (endNode) {
-      endNode.innerText = "E";
       endNode.classList.add("end");
     }
   }
