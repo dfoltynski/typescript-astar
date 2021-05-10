@@ -167,6 +167,28 @@ function distanceBetweenStartAndNeighbourThroughCurrent(
   return distance;
 }
 
+function reconstructPath(
+  startNode: HTMLTableCellElement,
+  endNode: HTMLTableCellElement
+) {
+  let path: Array<HTMLTableCellElement> = [];
+  let current: HTMLTableCellElement = endNode;
+
+  while (current != startNode) {
+    path.push(current);
+    current = document.getElementById(
+      current.getAttribute("parent") as string
+    ) as HTMLTableCellElement;
+  }
+
+  path.reverse();
+
+  // marking open list elements as green cells
+  for (let i = 0; i < path.length; i++) {
+    path[i].classList.add("path");
+  }
+}
+
 class Node {
   constructor(x: number, y: number) {
     const X: number = x;
@@ -340,9 +362,15 @@ class ControlPanel {
 
     // we need to make sure that these nodes exist in our grid
     if (startNode && endNode && barrierNodes) {
+      // document
+      //   .querySelectorAll(".closedList")
+      //   .forEach((e) => e.classList.remove("closedList"));
+      // document
+      //   .querySelectorAll(".openList")
+      //   .forEach((e) => e.classList.remove("openList"));
       const openList: Array<HTMLTableCellElement> = [];
       const closedList: Array<HTMLTableCellElement> = [];
-
+      let path: Array<HTMLTableCellElement> = [];
       let current: HTMLTableCellElement;
       openList.push(startNode);
 
@@ -367,6 +395,8 @@ class ControlPanel {
 
         if (current == endNode) {
           console.log("DONE");
+          reconstructPath(startNode, endNode);
+
           return;
         }
 
