@@ -84,17 +84,47 @@ function addNeighbours(currentNode: HTMLTableCellElement): string {
   if (currentNode) {
     // console.log(`tworzymy sasiadow dla `);
     // console.log(currentNode);
-
     // console.log(currentNode.id);
-    currentNode.setAttribute(
-      "neighbours",
-      JSON.stringify({
-        left: `${x - 1}:${y}`,
-        right: `${x + 1}:${y}`,
-        top: `${x}:${y - 1}`,
-        bottom: `${x}:${y + 1}`,
-      })
-    );
+    // if (x > 1 && y > 1) {
+    //   currentNode.setAttribute(
+    //     "neighbours",
+    //     JSON.stringify({
+    //       left: `${x - 1}:${y}`,
+    //       right: `${x + 1}:${y}`,
+    //       top: `${x}:${y - 1}`,
+    //       bottom: `${x}:${y + 1}`,
+    //     })
+    //   );
+    // } else if (x > 1) {
+    //   currentNode.setAttribute(
+    //     "neighbours",
+    //     JSON.stringify({
+    //       left: `${x - 1}:${y}`,
+    //       right: `${x + 1}:${y}`,
+    //       bottom: `${x}:${y + 1}`,
+    //     })
+    //   );
+    // } else if (y > 1) {
+    //   currentNode.setAttribute(
+    //     "neighbours",
+    //     JSON.stringify({
+    //       right: `${x + 1}:${y}`,
+    //       top: `${x}:${y - 1}`,
+    //       bottom: `${x}:${y + 1}`,
+    //     })
+    //   );
+    // }
+    // else if (y == 25) {
+    //   currentNode.setAttribute(
+    //     "neighbours",
+    //     JSON.stringify({
+    //       left: `${x - 1}:${y}`,
+    //       right: `${x + 1}:${y}`,
+    //       top: `${x}:${y - 1}`,
+    //       bottom: `${x}:${y + 1}`,
+    //     })
+    //   );
+    // }
     // console.log(
     //   JSON.stringify({
     //     left: `${x - 1}:${y}`,
@@ -104,6 +134,27 @@ function addNeighbours(currentNode: HTMLTableCellElement): string {
     //   })
     // );
   }
+
+  // currentNode.setAttribute(
+  //   "neighbours",
+  //   JSON.stringify({
+  //     left: `${x - 1 < 1 ? null : x - 1}:${y}`,
+  //     right: `${x + 1 > 25 ? null : x + 1}:${y}`,
+  //     top: `${x}:${y - 1 < 1 ? null : y - 1}`,
+  //     bottom: `${x}:${y + 1 > 25 ? null : y + 1}`,
+  //   })
+  // );
+
+  currentNode.setAttribute(
+    "neighbours",
+    JSON.stringify({
+      left: x - 1 < 1 ? undefined : `${x - 1}:${y}`,
+      right: x + 1 > 25 ? undefined : `${x + 1}:${y}`,
+      top: y - 1 < 1 ? undefined : `${x}:${y - 1}`,
+      bottom: y + 1 > 25 ? undefined : `${x}:${y + 1}`,
+    })
+  );
+
   return JSON.stringify({
     left: `${x - 1}:${y}`,
     right: `${x + 1}:${y}`,
