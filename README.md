@@ -1,6 +1,11 @@
 # A\* algorithm visualization made with TypeScript
 
+<a href="https://dfoltynski-astar-typescript.netlify.app/" target="_blank">
+<p>LIVE DEMO</p>
+
 ![showcase](showcase.gif)
+
+</a>
 
 ## Usage
 
@@ -14,7 +19,7 @@ run
     npm run dev
 ```
 
-and navigate to <a href="http://localhost:8080">localhost:8080</a>
+and navigate to <a href="http://localhost:8080" target="_blank">localhost:8080</a>
 
 ### Step 2
 
