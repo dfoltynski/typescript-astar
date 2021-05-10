@@ -23,10 +23,9 @@ let nodeType: string = "barrier";
 // functions
 function changeInfoText(text: string) {
   const panel = document.querySelector(".controlpanel");
-
+  const info = document.querySelector(".node-text");
   if (panel) {
-    document.body.childNodes[4].textContent = `${text}`;
-    // panel.childNodes[5].textContent = `${text}`;
+    if (info) info.textContent = `${text}`;
   }
   nodeType = `${text}`;
 }
