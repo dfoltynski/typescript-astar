@@ -162,9 +162,22 @@ class Grid {
     }
 
     document.body.appendChild(table);
+    table.onclick = this.removePreviousPath;
 
     this.createStartNode(startCoords);
     this.createEndNode(endCoords);
+  }
+
+  removePreviousPath() {
+    let cellList: NodeListOf<HTMLTableCellElement> = document.querySelectorAll(
+      ".closedList,.openList,.path"
+    );
+
+    cellList.forEach((e) => {
+      e.classList.remove("openList");
+      e.classList.remove("closedList");
+      e.classList.remove("path");
+    });
   }
 
   createCell(posX: number, posY: number): HTMLTableCellElement {
