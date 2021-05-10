@@ -65,7 +65,7 @@ function setBarrier(ev: any) {
   }
 }
 
-function removeFromOpenList(
+function removeFromList(
   openList: Array<HTMLTableCellElement>,
   current: HTMLTableCellElement
 ) {
@@ -76,91 +76,29 @@ function removeFromOpenList(
   }
 }
 
-function addNeighbours(currentNode: HTMLTableCellElement): string {
+function addNeighbours(currentNode: HTMLTableCellElement): any {
   // const currentNode = document.getElementById(startCoords);
   let x: number = parseInt(currentNode.id.split(":")[0]);
   let y: number = parseInt(currentNode.id.split(":")[1]);
 
   if (currentNode) {
-    // console.log(`tworzymy sasiadow dla `);
-    // console.log(currentNode);
-    // console.log(currentNode.id);
-    // if (x > 1 && y > 1) {
-    //   currentNode.setAttribute(
-    //     "neighbours",
-    //     JSON.stringify({
-    //       left: `${x - 1}:${y}`,
-    //       right: `${x + 1}:${y}`,
-    //       top: `${x}:${y - 1}`,
-    //       bottom: `${x}:${y + 1}`,
-    //     })
-    //   );
-    // } else if (x > 1) {
-    //   currentNode.setAttribute(
-    //     "neighbours",
-    //     JSON.stringify({
-    //       left: `${x - 1}:${y}`,
-    //       right: `${x + 1}:${y}`,
-    //       bottom: `${x}:${y + 1}`,
-    //     })
-    //   );
-    // } else if (y > 1) {
-    //   currentNode.setAttribute(
-    //     "neighbours",
-    //     JSON.stringify({
-    //       right: `${x + 1}:${y}`,
-    //       top: `${x}:${y - 1}`,
-    //       bottom: `${x}:${y + 1}`,
-    //     })
-    //   );
-    // }
-    // else if (y == 25) {
-    //   currentNode.setAttribute(
-    //     "neighbours",
-    //     JSON.stringify({
-    //       left: `${x - 1}:${y}`,
-    //       right: `${x + 1}:${y}`,
-    //       top: `${x}:${y - 1}`,
-    //       bottom: `${x}:${y + 1}`,
-    //     })
-    //   );
-    // }
-    // console.log(
-    //   JSON.stringify({
-    //     left: `${x - 1}:${y}`,
-    //     right: `${x + 1}:${y}`,
-    //     top: `${x}:${y - 1}`,
-    //     bottom: `${x}:${y + 1}`,
-    //   })
-    // );
-  }
+    currentNode.setAttribute(
+      "neighbours",
+      JSON.stringify({
+        left: x - 1 < 1 ? undefined : `${x - 1}:${y}`,
+        right: x + 1 > 25 ? undefined : `${x + 1}:${y}`,
+        top: y - 1 < 1 ? undefined : `${x}:${y - 1}`,
+        bottom: y + 1 > 25 ? undefined : `${x}:${y + 1}`,
+      })
+    );
 
-  // currentNode.setAttribute(
-  //   "neighbours",
-  //   JSON.stringify({
-  //     left: `${x - 1 < 1 ? null : x - 1}:${y}`,
-  //     right: `${x + 1 > 25 ? null : x + 1}:${y}`,
-  //     top: `${x}:${y - 1 < 1 ? null : y - 1}`,
-  //     bottom: `${x}:${y + 1 > 25 ? null : y + 1}`,
-  //   })
-  // );
-
-  currentNode.setAttribute(
-    "neighbours",
-    JSON.stringify({
+    return JSON.stringify({
       left: x - 1 < 1 ? undefined : `${x - 1}:${y}`,
       right: x + 1 > 25 ? undefined : `${x + 1}:${y}`,
       top: y - 1 < 1 ? undefined : `${x}:${y - 1}`,
       bottom: y + 1 > 25 ? undefined : `${x}:${y + 1}`,
-    })
-  );
-
-  return JSON.stringify({
-    left: `${x - 1}:${y}`,
-    right: `${x + 1}:${y}`,
-    top: `${x}:${y - 1}`,
-    bottom: `${x}:${y + 1}`,
-  });
+    });
+  }
 }
 
 function heuristic(
@@ -213,14 +151,6 @@ function distanceBetweenStartAndNeighbourThroughCurrent(
     currentNeighbourNode.id.split(":")[1]
   );
 
-  // console.log("Start Node X:Y: ", startNodeX, startNodeY);
-  // console.log("Current X:Y: ", currentNodeX, currentNodeY);
-  // console.log(
-  //   "Current neighbour X:Y: ",
-  //   currentNeighbourNodeX,
-  //   currentNeighbourNodeY
-  // );
-
   let distance = Math.floor(
     Math.sqrt(
       Math.pow(currentNodeX - startNodeX, 2) +
@@ -235,12 +165,6 @@ function distanceBetweenStartAndNeighbourThroughCurrent(
   // console.log(distance);
 
   return distance;
-}
-
-function reconstructPath(cameFrom: any, current: HTMLTableCellElement) {
-  console.log(current);
-
-  console.log(cameFrom);
 }
 
 class Node {
@@ -302,15 +226,6 @@ class Grid {
 
     cell.setAttribute("g", "0");
 
-    cell.setAttribute(
-      "neighbours",
-      JSON.stringify({
-        left: "0:0",
-        right: "0:0",
-        top: "0:0",
-        bottom: "0:0",
-      })
-    );
     return cell;
   }
 
@@ -321,6 +236,7 @@ class Grid {
     );
 
     if (startNode) {
+      startNode.innerText = "S";
       startNode.classList.add("start");
       startNode.setAttribute("cost", "0");
     }
@@ -331,6 +247,7 @@ class Grid {
     const endNode: HTMLElement | null = document.getElementById(endNodeCoords);
 
     if (endNode) {
+      endNode.innerText = "E";
       endNode.classList.add("end");
     }
   }
@@ -406,8 +323,7 @@ class ControlPanel {
 
   findPath() {
     const grid: NodeListOf<HTMLElement> = document.querySelectorAll(".cell");
-    // console.log(grid);
-    // console.log("grid");
+
     const startNode: HTMLTableCellElement | null = document.querySelector(
       ".start"
     );
@@ -427,96 +343,81 @@ class ControlPanel {
       const openList: Array<HTMLTableCellElement> = [];
       const closedList: Array<HTMLTableCellElement> = [];
 
-      let winner = 0;
       let current: HTMLTableCellElement;
       openList.push(startNode);
 
-      let currentNeighbours: string;
+      let currentNeighbour: HTMLTableCellElement;
+      let listOfAllNeighboursIDs: string;
 
-      let cameFrom: Array<HTMLTableCellElement> = [];
       while (openList.length > 0) {
-        // console.log("OpenList content: ", openList);
-        // console.log("ClosedList content: ", closedList);
-
+        current = openList[0];
         for (let i = 0; i < openList.length; i++) {
           if (
             parseInt(openList[i].getAttribute("cost") as string) <
-            parseInt(openList[winner].getAttribute("cost") as string)
+            parseInt(current.getAttribute("cost") as string)
           ) {
-            winner = i;
+            current = openList[i];
           }
         }
-        current = openList[winner];
-        console.log("WYGRYWA:", current);
 
-        if (current == endNode) {
-          // let cameFromList: Array<HTMLTableCellElement> = [];
-          // document.querySelectorAll(".cell").forEach((cell) => {
-          //   if (cell.getAttribute("cameFrom") != null) {
-          //     cameFromList.push(cell as HTMLTableCellElement);
-          //     console.log(cameFromList);
-          //   }
-          // });
+        console.log(current);
 
-          reconstructPath(cameFrom, current);
-
-          console.log("DONE");
-
-          return;
-          break;
-        }
-
-        removeFromOpenList(openList, current);
+        removeFromList(openList, current);
         closedList.push(current);
 
-        currentNeighbours = addNeighbours(current);
-        currentNeighbours = JSON.parse(
+        if (current == endNode) {
+          console.log("DONE");
+          return;
+        }
+
+        listOfAllNeighboursIDs = addNeighbours(current);
+        listOfAllNeighboursIDs = JSON.parse(
           current.getAttribute("neighbours") as string
         );
-        // console.log("Current neighbours: ", currentNeighbours);
 
-        for (let i = 0; i < Object.keys(currentNeighbours).length; i++) {
-          let currentNeighbour: HTMLTableCellElement = document.getElementById(
-            Object.values(currentNeighbours)[i]
+        for (let i = 0; i < Object.keys(listOfAllNeighboursIDs).length; i++) {
+          currentNeighbour = document.getElementById(
+            Object.values(listOfAllNeighboursIDs)[i]
           ) as HTMLTableCellElement;
 
-          if (!closedList.includes(currentNeighbour)) {
-            // console.log(currentNeighbour);
+          if (
+            currentNeighbour.classList.contains("barrier") ||
+            closedList.includes(currentNeighbour)
+          ) {
+            continue;
+          }
 
-            let tentativeGScore =
-              parseInt(current.getAttribute("g") as string) +
-              heuristic(current, currentNeighbour);
+          let tentativeGScore =
+            parseInt(current.getAttribute("g") as string) +
+            heuristic(current, currentNeighbour);
 
-            let tentativeGIsBetter: boolean = false;
+          if (
+            tentativeGScore <
+              parseInt(currentNeighbour.getAttribute("g") as string) ||
+            !openList.includes(currentNeighbour)
+          ) {
+            currentNeighbour.setAttribute(
+              "h",
+              `${heuristic(currentNeighbour, endNode)}`
+            );
+            currentNeighbour.setAttribute("g", `${tentativeGScore}`);
+
+            currentNeighbour.setAttribute(
+              "cost",
+              `${
+                parseInt(currentNeighbour.getAttribute("g") as string) +
+                parseInt(currentNeighbour.getAttribute("h") as string)
+              }`
+            );
+
+            currentNeighbour.setAttribute("parent", `${current.id}`);
 
             if (!openList.includes(currentNeighbour)) {
               openList.push(currentNeighbour);
-              currentNeighbour.setAttribute(
-                "h",
-                `${heuristic(currentNeighbour, endNode)}`
-              );
-              tentativeGIsBetter = true;
-            } else if (
-              tentativeGScore <
-              parseInt(currentNeighbour.getAttribute("g") as string)
-            ) {
-              tentativeGIsBetter = true;
-            }
-            if (tentativeGIsBetter) {
-              // console.log(currentNeighbour, current);
-              cameFrom.push(currentNeighbour);
-              currentNeighbour.setAttribute("cameFrom", current.id);
-              currentNeighbour.setAttribute("g", `${tentativeGScore}`);
-              currentNeighbour.setAttribute(
-                "cost",
-                `${
-                  parseInt(currentNeighbour.getAttribute("g") as string) +
-                  parseInt(currentNeighbour.getAttribute("h") as string)
-                }`
-              );
             }
           }
         }
+
         // marking open list elements as green cells
         for (let i = 0; i < openList.length; i++) {
           openList[i].classList.add("openList");
