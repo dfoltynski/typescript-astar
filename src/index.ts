@@ -25,7 +25,8 @@ function changeInfoText(text: string) {
   const panel = document.querySelector(".controlpanel");
 
   if (panel) {
-    panel.childNodes[4].textContent = `${text}`;
+    document.body.childNodes[4].textContent = `${text}`;
+    // panel.childNodes[5].textContent = `${text}`;
   }
   nodeType = `${text}`;
 }
@@ -242,26 +243,39 @@ class ControlPanel {
     const startButton = this.createButton("Start node");
     startButton.onclick = this.onClickStart;
     controlPanel.appendChild(startButton);
+    startButton.classList.add("start-btn");
 
     const endButton = this.createButton("End node");
     endButton.onclick = this.onClickEnd;
     controlPanel.appendChild(endButton);
+    endButton.classList.add("end-btn");
 
     const barrierButton = this.createButton("Barrier node");
     barrierButton.onclick = this.onClickBarrier;
     controlPanel.appendChild(barrierButton);
+    barrierButton.classList.add("barrier-btn");
 
     const findPathButton = this.createButton("Find path");
     findPathButton.onclick = this.findPath;
     controlPanel.appendChild(findPathButton);
+    findPathButton.classList.add("find-btn");
+
+    const refreshButton = this.createButton("Refresh");
+    refreshButton.onclick = this.onClickRefresh;
+    controlPanel.appendChild(refreshButton);
+    refreshButton.classList.add("find-btn");
 
     const info: HTMLSpanElement = document.createElement("span");
+    info.classList.add("node-text");
 
     info.textContent = `${nodeType}`;
 
-    controlPanel.appendChild(info);
-
     document.body.appendChild(controlPanel);
+    document.body.appendChild(info);
+  }
+
+  onClickRefresh() {
+    location.reload();
   }
 
   createButton(text: string): HTMLButtonElement {
@@ -271,7 +285,7 @@ class ControlPanel {
     return button;
   }
 
-  onClickStart() {
+  onClickStart(ev: any) {
     changeInfoText("start");
   }
   onClickEnd() {
